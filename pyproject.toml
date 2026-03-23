@@ -1,0 +1,44 @@
+[project]
+name = "ground-news-mcp"
+version = "0.1.0"
+description = "MCP server exposing Ground News bias data as Claude tools"
+requires-python = ">=3.12"
+dependencies = [
+    "mcp>=1.0",
+    "requests>=2.32",
+    "beautifulsoup4>=4.12",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "pytest",
+    "pytest-cov",
+]
+
+[project.scripts]
+ground-news-mcp = "ground_news_mcp.server:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.backends.legacy:build"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--tb=short"
