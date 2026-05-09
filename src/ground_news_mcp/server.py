@@ -14,7 +14,7 @@ Run with `ground-news-mcp` (entry point) or `python -m ground_news_mcp.server`.
 from __future__ import annotations
 
 import logging
-from dataclasses import asdict
+from dataclasses import asdict, is_dataclass
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
@@ -27,13 +27,25 @@ mcp = FastMCP("ground-news-mcp")
 
 
 def _to_dict(obj: Any) -> Any:
-    """Convert frozen dataclass (or tuple of them) to plain dict for JSON return."""
+    """Recursively convert frozen dataclasses (and tuples of them) to plain
+    JSON-serializable dicts and lists. Tuples become lists so MCP clients
+    receive standard JSON arrays.
+    """
     if isinstance(obj, list | tuple):
         return [_to_dict(x) for x in obj]
-    try:
-        return asdict(obj)
-    except TypeError:
-        return obj
+    if is_dataclass(obj) and not isinstance(obj, type):
+        # asdict recursively converts; then walk to coerce any nested tuples
+        # (frozen dataclass tuple fields) into lists.
+        return _coerce_tuples(asdict(obj))
+    return obj
+
+
+def _coerce_tuples(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {k: _coerce_tuples(v) for k, v in value.items()}
+    if isinstance(value, list | tuple):
+        return [_coerce_tuples(v) for v in value]
+    return value
 
 
 # ---------------------------------------------------------------------------
