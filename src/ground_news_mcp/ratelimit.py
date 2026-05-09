@@ -52,14 +52,20 @@ _state = _State()
 
 
 def _wait_for_token(min_interval: float) -> None:
-    """Sleep until min_interval has passed since the last request."""
+    """Block until at least min_interval has passed since the last request.
+
+    The lock is held across the sleep. This serializes outbound requests so
+    two concurrent callers can't both think they're a full interval after
+    the previous request — they must each wait their own full interval.
+    """
     with _state.lock:
         now = time.monotonic()
         wait = (_state.last_request_at + min_interval) - now
-        _state.last_request_at = max(now, _state.last_request_at + min_interval)
-    if wait > 0:
-        logger.debug("Rate limit: sleeping %.2fs", wait)
-        time.sleep(wait)
+        if wait > 0:
+            logger.debug("Rate limit: sleeping %.2fs", wait)
+            time.sleep(wait)
+            now = time.monotonic()
+        _state.last_request_at = now
 
 
 def _check_breaker(cfg: RateLimitConfig) -> None:
@@ -118,6 +124,10 @@ def call_with_limits(
             response = fn()
         except requests.RequestException as exc:
             last_exc = exc
+            if attempt >= cfg.max_retries:
+                # Out of retries — record once and propagate
+                _record_failure(cfg)
+                raise
             wait = cfg.backoff_base * (2**attempt)
             logger.warning(
                 "Request error (attempt %d): %s — waiting %.1fs", attempt + 1, exc, wait
@@ -151,6 +161,8 @@ def call_with_limits(
         _record_success()
         return response
 
+    # All exit paths inside the loop either return or raise. This is
+    # defensive: if control somehow reaches here, treat it as a failure.
     _record_failure(cfg)
     if last_exc is not None:
         raise last_exc

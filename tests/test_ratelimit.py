@@ -65,6 +65,7 @@ def test_circuit_breaker_trips_after_failures():
         breaker_threshold=2,
         breaker_cooldown=60.0,
     )
+
     def fn_fail():
         return _ok(503)
 

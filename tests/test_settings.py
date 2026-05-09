@@ -32,11 +32,21 @@ def test_apply_profile_persists(tmp_settings):
 
 
 @pytest.mark.unit
-def test_individual_setting_marks_custom(tmp_settings):
+def test_individual_setting_persists_without_corrupting_profile(tmp_settings):
+    """Setting a single toggle must not write an invalid profile marker.
+
+    Regression: earlier behavior wrote `profile: "custom"` to disk, which
+    is not in PROFILES and prevented re-applying a named profile cleanly.
+    """
     settings.update_settings("bias_checker", True)
     s = settings.get_settings()
-    assert s["profile"] == "custom"
     assert s["bias_checker"] is True
+    # Profile falls back to the default — no corrupt marker persisted
+    assert s["profile"] in {"minimal", "balanced", "full"}
+    # And we can still re-apply a named profile without errors
+    s2 = settings.update_settings("profile", "minimal")
+    assert s2["profile"] == "minimal"
+    assert s2["bias_checker"] is False
 
 
 @pytest.mark.unit

@@ -82,7 +82,10 @@ def update_settings(key: str, value: Any) -> dict[str, Any]:
                 f"Setting '{key}' must be a bool, got {type(value).__name__}"
             )
         current[key] = value
-        current["profile"] = "custom"
+        # Mark as no-longer-matching-a-named-profile by removing the marker
+        # rather than writing a sentinel value. Avoids the persisted-bad-state
+        # bug where re-applying any subsequent profile is required to recover.
+        current.pop("profile", None)
 
     SETTINGS_DIR.mkdir(parents=True, exist_ok=True)
     SETTINGS_FILE.write_text(json.dumps(current, indent=2))

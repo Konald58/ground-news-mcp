@@ -12,12 +12,26 @@ from typing import Any
 
 from .models import BiasBreakdown, BiasCheck, MissingPerspectives, Source, StoryResult
 from .rsc import (
+    MAX_STRING_FIELD,
     article_url,
     get_article_data,
     get_interest_data,
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _safe_str(value: Any, max_len: int = MAX_STRING_FIELD) -> str:
+    """Truncate and coerce to string. Defense against prompt-injection-style
+    payloads from a compromised upstream by capping all user-facing fields.
+    """
+    if value is None:
+        return ""
+    if not isinstance(value, str):
+        value = str(value)
+    if len(value) > max_len:
+        return value[:max_len] + "…"
+    return value
 
 
 # ---------------------------------------------------------------------------
@@ -52,12 +66,14 @@ def _dedupe_sources(raw_sources: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def _build_source(raw: dict[str, Any]) -> Source:
-    outlet = (raw.get("sourceInfo") or {}).get("name") or ""
+    outlet = _safe_str((raw.get("sourceInfo") or {}).get("name"), max_len=200)
     bias_label = _normalize_bias(
         (raw.get("sortData") or {}).get("bias", {}).get("labelData")
     )
     return Source(
-        outlet=outlet, bias_label=bias_label, article_url=raw.get("url") or ""
+        outlet=outlet,
+        bias_label=bias_label,
+        article_url=_safe_str(raw.get("url"), max_len=2048),
     )
 
 
@@ -73,15 +89,34 @@ def get_story_bias(url_or_slug: str) -> BiasBreakdown:
     raw_sources = _dedupe_sources(data["sources"])
 
     bucket_counts = Counter(_build_source(s).bias_label for s in raw_sources)
-    left_count = story.get("leftSrcCount") or bucket_counts.get("Left", 0)
-    right_count = story.get("rightSrcCount") or bucket_counts.get("Right", 0)
-    center_count = story.get("cntrSrcCount") or bucket_counts.get("Center", 0)
+    # Use `is not None` (not `or`) so a legitimate 0 from upstream isn't
+    # treated as missing and silently overridden by recomputed counts.
+    left_count = (
+        story["leftSrcCount"]
+        if story.get("leftSrcCount") is not None
+        else bucket_counts.get("Left", 0)
+    )
+    right_count = (
+        story["rightSrcCount"]
+        if story.get("rightSrcCount") is not None
+        else bucket_counts.get("Right", 0)
+    )
+    center_count = (
+        story["cntrSrcCount"]
+        if story.get("cntrSrcCount") is not None
+        else bucket_counts.get("Center", 0)
+    )
 
-    left_pct = round((story.get("leftSrcPercent") or 0) * 100)
-    right_pct = round((story.get("rightSrcPercent") or 0) * 100)
-    center_pct = round((story.get("cntrSrcPercent") or 0) * 100)
+    left_frac = story.get("leftSrcPercent")
+    right_frac = story.get("rightSrcPercent")
+    center_frac = story.get("cntrSrcPercent")
+    have_pcts = all(x is not None for x in (left_frac, right_frac, center_frac))
 
-    if left_pct + right_pct + center_pct == 0:
+    if have_pcts:
+        left_pct = round(left_frac * 100)
+        right_pct = round(right_frac * 100)
+        center_pct = round(center_frac * 100)
+    else:
         total = left_count + right_count + center_count or 1
         left_pct = round(left_count / total * 100)
         right_pct = round(right_count / total * 100)
@@ -93,8 +128,9 @@ def get_story_bias(url_or_slug: str) -> BiasBreakdown:
     )[0]
 
     sources = tuple(_build_source(s) for s in raw_sources)
-    title = (
-        story.get("title") or (story.get("description") or "").split("\n", 1)[0][:80]
+    title = _safe_str(
+        story.get("title") or (story.get("description") or "").split("\n", 1)[0],
+        max_len=300,
     )
 
     return BiasBreakdown(
@@ -108,13 +144,20 @@ def get_story_bias(url_or_slug: str) -> BiasBreakdown:
         center_pct=center_pct,
         right_pct=right_pct,
         dominant_bias=dominant,
-        last_updated=story.get("start") or "",
+        last_updated=_safe_str(story.get("start"), max_len=64),
         sources=sources,
     )
 
 
+MAX_LIMIT = 50
+
+
 def get_topic_stories(topic: str, limit: int = 10) -> list[StoryResult]:
-    """List stories from a Ground News interest/topic page."""
+    """List stories from a Ground News interest/topic page.
+
+    Limit is clamped to MAX_LIMIT to bound payload + tool-result size.
+    """
+    limit = max(1, min(limit, MAX_LIMIT))
     data = get_interest_data(topic)
     out: list[StoryResult] = []
     for s in data["stories"][:limit]:
@@ -123,9 +166,9 @@ def get_topic_stories(topic: str, limit: int = 10) -> list[StoryResult]:
             continue
         out.append(
             StoryResult(
-                title=s.get("title") or "",
-                url=f"https://ground.news/article/{slug}",
-                slug=slug,
+                title=_safe_str(s.get("title"), max_len=300),
+                url=f"https://ground.news/article/{_safe_str(slug, max_len=200)}",
+                slug=_safe_str(slug, max_len=200),
                 source_count=s.get("sourceCount") or s.get("biasSourceCount"),
             )
         )

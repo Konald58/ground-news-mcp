@@ -50,6 +50,23 @@ class TestSlugHelpers:
         with pytest.raises(ValueError):
             slug_from_url("https://example.com/somewhere")
 
+    def test_slug_rejects_empty(self):
+        with pytest.raises(ValueError):
+            slug_from_url("")
+        with pytest.raises(ValueError):
+            slug_from_url("   ")
+
+    def test_slug_rejects_path_traversal(self):
+        with pytest.raises(ValueError):
+            slug_from_url("../../etc/passwd")
+        with pytest.raises(ValueError):
+            slug_from_url("article/../../etc/passwd")
+
+    def test_slug_rejects_special_characters(self):
+        for bad in ("foo bar", "foo/bar", "foo?x=1", "foo#frag", "FOO"):
+            with pytest.raises(ValueError):
+                slug_from_url(bad)
+
     def test_topic_slug_normalizes(self):
         assert topic_slug("Iran War") == "iran-war"
         assert topic_slug("  AI / Tech  ") == "ai-tech"
