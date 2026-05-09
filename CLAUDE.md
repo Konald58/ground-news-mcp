@@ -1,14 +1,16 @@
-# CLAUDE.md — Project Override
-
-<!-- Replace this file with project-specific rules. Inherits global ~/.../CLAUDE.md -->
+# CLAUDE.md — ground-news-mcp
 
 ## Project
-<!-- Describe what this project does and why it exists -->
+MCP server for Ground News scraping and analysis. Provides Claude with tools to fetch and analyze news bias/coverage data from Ground News.
 
 ## Stack
 - Python 3.12+
-- ruff (format + lint)
-- pytest
+- MCP server protocol
+- ruff, pytest (src/ layout with tests/)
+
+## Key Directories
+- `src/` — main package source
+- `tests/` — pytest test suite
 
 ## Setup
 ```bash
@@ -19,15 +21,24 @@ pip install -e ".[dev]"
 
 ## Run
 ```bash
-python -m project_name.main
+ground-news-mcp                          # entry point
+# or
+python -m ground_news_mcp.server         # module form
 ```
 
-## Test
+## Architecture
+- `rsc.py` — fetches Next.js RSC payload (`RSC: 1` header → `text/x-component`), parses chunks via `json.JSONDecoder.raw_decode()`, walks JSON trees by structural predicates.
+- `ratelimit.py` — token bucket (2s default), exponential backoff on 429/503, circuit breaker (3 failures → 5min cooldown).
+- `scraper.py` — public API wrapping rsc.py, returns frozen dataclasses from `models.py`.
+- `server.py` — FastMCP server exposing 8 tools.
+- `settings.py` — JSON persistence at `~/.ground-news-mcp/settings.json`.
+
+## Testing
+- All tests offline; live captures stored in `tests/fixtures/*.rsc`.
+- Refresh fixture: `curl -H "RSC: 1" "https://ground.news/article/<slug>" > tests/fixtures/article_sample.rsc`.
+
+## Test / Lint
 ```bash
 pytest
-```
-
-## Lint
-```bash
 ruff check . && ruff format .
 ```
