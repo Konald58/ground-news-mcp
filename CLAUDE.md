@@ -42,3 +42,25 @@ python -m ground_news_mcp.server         # module form
 pytest
 ruff check . && ruff format .
 ```
+
+## Resilience
+
+- 5-min TTL parsed-data cache (thread-safe)
+- Token bucket: 2s min interval, lock held across sleep
+- Backoff on 429/503 honoring `Retry-After`
+- Circuit breaker: 3 fails → 5min cooldown
+- 8 MB payload cap, 2000-chunk parse cap
+- Slug allowlist regex blocks path traversal
+
+## Watch-outs
+
+- **Don't bulk-harvest** — RSC payloads are ~2 MB each. 50 calls = 100 MB of bandwidth.
+- **Next.js migration risk** — the RSC chunk format will eventually change. Realistic ~1–2 year half-life.
+- **No keyword search** — Ground News doesn't expose one. `search_stories` maps queries to interest slugs.
+- **Blindspot Premium gated** — needs `GN_SESSION_COOKIE` from a paid session.
+- **ToS gray zone** — keep this personal-use; don't host as a public SaaS.
+
+## Refs
+
+- Vault: `~/Vault/projects/ground-news-mcp/ground-news-mcp.md`
+- Blog draft: `~/Vault/resources/blog-drafts/rsc-reverse-engineering.md`
