@@ -2,6 +2,8 @@
 
 An MCP server that exposes [Ground News](https://ground.news/) media-bias and coverage data to Claude as tools.
 
+> **Disclaimer:** This is an independent, unofficial project with no affiliation to, endorsement by, or sponsorship from Ground News. "Ground News" is a trademark of its respective owner; it's referenced here only to describe the data source this tool parses.
+
 Ground News doesn't publish a public API. This server doesn't scrape rendered HTML either — it parses the React Server Components (RSC) payload that Next.js streams alongside every page, and pulls the structured story and source data straight out of it.
 
 > **Why this matters:** RSC field names (`biasSourceCount`, `leftSrcPercent`, `sortData.bias.labelData`, …) come from the backend data model, so they stay stable across deploys. Traditional scrapers break the moment a Tailwind class changes; this one breaks only on a major framework migration.

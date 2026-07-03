@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. Format foll
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-05-09
+
 ### Added
 - `rsc.py` — React Server Components payload fetcher and parser. Replaces fragile HTML scraping with stable backend-property-name extraction.
 - `ratelimit.py` — token bucket, exponential backoff with `Retry-After` support, and a circuit breaker.
@@ -12,11 +14,15 @@ All notable changes to this project will be documented in this file. Format foll
 - `tests/fixtures/article_sample.rsc`, `interest_sample.rsc` — captured RSC payloads for tests.
 - `list_outlets_by_bias` tool — filter a story's sources by Left/Center/Right.
 - README documenting the RSC approach and resilience model.
+- LICENSE, CI workflow, and an integration test (portfolio polish).
 
 ### Changed
 - `scraper.py` — public API preserved; internals now route through `rsc.py` instead of BeautifulSoup.
 - Identifying User-Agent (`ground-news-mcp/0.1 (+...)`) replaces the Chrome spoof.
 - `pyproject.toml` — dropped `beautifulsoup4` dependency; added `unit`/`integration` pytest markers.
+
+### Fixed
+- Review findings: concurrency, DoS exposure, prompt injection, and assorted bugs.
 
 ### Removed
 - BeautifulSoup-based HTML scraping (text-proximity parsing of Coverage Details, regex on rendered bias percentages).
