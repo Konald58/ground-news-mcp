@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Format foll
 
 ## [Unreleased]
 
+### Fixed
+- `fetch_rsc` now forces UTF-8 decoding. The `text/x-component` response carries no charset, so `requests` defaulted to latin-1 and mangled non-ASCII outlet names (Cyrillic, Korean, …). Offline fixtures (English stories) never surfaced this; caught via a live probe. Added `TestFetchEncoding` regression test.
+
 ## [0.2.0] — 2026-05-09
 
 ### Added

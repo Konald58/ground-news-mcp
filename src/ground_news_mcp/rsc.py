@@ -124,6 +124,10 @@ def fetch_rsc(url: str) -> str:
     response = call_with_limits(
         lambda: requests.get(url, headers=_headers(), timeout=REQUEST_TIMEOUT)
     )
+    # Next.js streams RSC as UTF-8 but the text/x-component response carries no
+    # charset, so requests falls back to latin-1 and mangles non-ASCII outlet
+    # names (Cyrillic, Korean, …). Force UTF-8 before decoding.
+    response.encoding = "utf-8"
     text = response.text
     if len(text) > MAX_PAYLOAD_BYTES:
         logger.warning(

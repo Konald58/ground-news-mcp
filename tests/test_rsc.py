@@ -7,10 +7,13 @@ a real Ground News RSC payload captured to tests/fixtures/.
 from __future__ import annotations
 
 from pathlib import Path
+from unittest import mock
 
 import pytest
+import requests
 
 from ground_news_mcp.rsc import (
+    fetch_rsc,
     parse_article,
     parse_interest,
     slug_from_url,
@@ -131,3 +134,36 @@ class TestParseInterest:
         stories = parse_interest(interest_payload)["stories"]
         slugs = [s.get("slug") for s in stories]
         assert len(slugs) == len(set(slugs))
+
+
+# ---------------------------------------------------------------------------
+# Fetch decoding (regression: non-ASCII outlet names)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+class TestFetchEncoding:
+    def _fake_response(self, body: str) -> requests.Response:
+        """A response whose UTF-8 body carries no charset, so requests would
+        otherwise default to latin-1 — the exact shape that mangled Cyrillic
+        and Korean outlet names."""
+        resp = requests.Response()
+        resp.status_code = 200
+        resp._content = body.encode("utf-8")
+        resp.headers["Content-Type"] = "text/x-component"
+        return resp
+
+    def test_decodes_utf8_when_charset_absent(self):
+        # "Новое Время" (Cyrillic) + "연합뉴스" (Korean) — the names that broke.
+        body = '0:{"name":"Новое Время","alt":"연합뉴스"}'
+        assert requests.utils.get_encoding_from_headers(
+            self._fake_response(body).headers
+        ) in (None, "ISO-8859-1")
+        with mock.patch(
+            "ground_news_mcp.rsc.requests.get",
+            return_value=self._fake_response(body),
+        ):
+            text = fetch_rsc("https://ground.news/interest/test")
+        assert "Новое Время" in text
+        assert "연합뉴스" in text
+        assert "Ã" not in text  # mojibake marker absent
