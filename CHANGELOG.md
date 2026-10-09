@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Format foll
 
 ## [Unreleased]
 
+### Fixed
+- Pin `mcp<2`. mcp 2.x renamed `FastMCP` to `MCPServer`, so a fresh install broke at import; CI on `main` was red. Migration to 2.x is a separate change.
+
 ## [0.3.0] - 2026-10-09
 
 ### Added
