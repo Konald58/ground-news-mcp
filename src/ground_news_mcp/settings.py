@@ -1,8 +1,8 @@
 """Settings persistence for ground-news-mcp.
 
 Settings are stored in ~/.ground-news-mcp/settings.json.
-Users change settings by telling Claude: "enable bias checking mode".
-Claude calls update_settings(), which persists to disk.
+Users change settings by telling their assistant: "enable bias checking mode".
+The model calls update_settings(), which persists to disk.
 """
 
 import json

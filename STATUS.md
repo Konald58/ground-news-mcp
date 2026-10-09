@@ -6,7 +6,7 @@ status: active
 
 ## What it is
 
-MCP server that exposes Ground News media-bias and coverage data as tools Claude can call. Instead of scraping rendered HTML, it fetches and parses the React Server Components (RSC) payload Next.js streams alongside every Ground News page — the field names come from the backend data model, so they're stable across normal deploys. 8 tools: story bias breakdown, topic browsing, keyword-to-slug search, missing-perspectives surfacing, content bias check, source filtering by lean, and settings get/update. Repo: github.com/Konald58/ground-news-mcp.
+MCP server that exposes Ground News media-bias and coverage data as tools for any MCP client (Claude Code, Claude Desktop, Cursor, VS Code, Codex, ...). Instead of scraping rendered HTML, it fetches and parses the React Server Components (RSC) payload Next.js streams alongside every Ground News page — the field names come from the backend data model, so they're stable across normal deploys. 8 tools: story bias breakdown, topic browsing, keyword-to-slug search, missing-perspectives surfacing, content bias check, source filtering by lean, and settings get/update. Repo: github.com/Konald58/ground-news-mcp.
 
 ## Where it stands
 

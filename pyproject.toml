@@ -1,7 +1,7 @@
 [project]
 name = "ground-news-mcp"
 version = "0.3.0"
-description = "MCP server exposing Ground News bias data as Claude tools"
+description = "MCP server exposing Ground News media-bias data to any MCP client"
 requires-python = ">=3.12"
 dependencies = [
     "mcp>=1.0,<2",

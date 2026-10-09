@@ -1,6 +1,6 @@
 # ground-news-mcp
 
-An MCP server that exposes [Ground News](https://ground.news/) media-bias and coverage data to Claude as tools.
+An MCP server that exposes [Ground News](https://ground.news/) media-bias and coverage data as tools for any MCP client: Claude Code, Claude Desktop, Cursor, VS Code, Windsurf, Codex, or your own agent.
 
 > **Disclaimer:** This is an independent, unofficial project with no affiliation to, endorsement by, or sponsorship from Ground News. "Ground News" is a trademark of its respective owner; it's referenced here only to describe the data source this tool parses.
 
@@ -22,9 +22,9 @@ Ground News doesn't publish a public API. This server doesn't scrape rendered HT
 
 ## Demo
 
-Ask Claude: *"How is the Japan cyberattack warning being covered across the spectrum?"*
+Ask your assistant: *"How is the Japan cyberattack warning being covered across the spectrum?"*
 
-Claude calls `get_topic_stories("ai", limit=3)`, picks the first story, then `get_story_bias(slug)`:
+The model calls `get_topic_stories("ai", limit=3)`, picks the first story, then `get_story_bias(slug)`:
 
 ```json
 {
@@ -50,7 +50,7 @@ Claude calls `get_topic_stories("ai", limit=3)`, picks the first story, then `ge
 }
 ```
 
-Claude then answers with the split, names the two Right-leaning outlets, and flags that 7 of the 25 sources carry no rating. Captured live on 2026-10-09.
+It then answers with the split, names the two Right-leaning outlets, and flags that 7 of the 25 sources carry no rating. Captured live on 2026-10-09.
 
 ## Install
 
@@ -63,7 +63,11 @@ python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
-## Register with Claude
+## Register with an MCP client
+
+The server speaks stdio MCP, so any client that can launch a local command works. Point it at the `ground-news-mcp` entry point inside the venv.
+
+**Claude Code**
 
 ```bash
 claude mcp add-json ground-news '{
@@ -71,6 +75,40 @@ claude mcp add-json ground-news '{
   "command": "/absolute/path/to/.venv/bin/ground-news-mcp"
 }'
 ```
+
+**Claude Desktop, Cursor, Windsurf** (`claude_desktop_config.json`, `.cursor/mcp.json`, `mcp_config.json`)
+
+```json
+{
+  "mcpServers": {
+    "ground-news": {
+      "command": "/absolute/path/to/.venv/bin/ground-news-mcp"
+    }
+  }
+}
+```
+
+**VS Code** (`.vscode/mcp.json`)
+
+```json
+{
+  "servers": {
+    "ground-news": {
+      "type": "stdio",
+      "command": "/absolute/path/to/.venv/bin/ground-news-mcp"
+    }
+  }
+}
+```
+
+**Codex** (`~/.codex/config.toml`)
+
+```toml
+[mcp_servers.ground-news]
+command = "/absolute/path/to/.venv/bin/ground-news-mcp"
+```
+
+Any other client: run the command above over stdio. Set `GN_SESSION_COOKIE` in the client's env block if you use one.
 
 ## How it works
 

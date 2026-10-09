@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Format foll
 
 ## [Unreleased]
 
+### Changed
+- Wording and install docs are client-neutral: the server is plain stdio MCP and the README now shows Claude Code, Claude Desktop, Cursor, Windsurf, VS Code and Codex configs.
+
 ### Fixed
 - Pin `mcp<2`. mcp 2.x renamed `FastMCP` to `MCPServer`, so a fresh install broke at import; CI on `main` was red. Migration to 2.x is a separate change.
 

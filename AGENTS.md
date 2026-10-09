@@ -1,6 +1,6 @@
 # AGENTS.md — ground-news-mcp
 
-MCP server exposing Ground News media-bias and coverage data as Claude tools.
+MCP server exposing Ground News media-bias and coverage data as tools for any MCP client.
 Parses the Next.js React Server Components (RSC) payload instead of scraping rendered HTML.
 
 ## Stack
@@ -48,7 +48,7 @@ CI (`.github/workflows/ci.yml`) runs all four on push/PR to `main`.
 ## Conventions
 
 - Return types are frozen dataclasses (`@dataclass(frozen=True)`), converted to plain dict/list at the MCP boundary in `server.py`, never passed through as-is.
-- Every string flowing back to Claude goes through `_safe_str` (truncation) as a prompt-injection defense — don't bypass it when adding a new tool.
+- Every string flowing back to the model goes through `_safe_str` (truncation) as a prompt-injection defense — don't bypass it when adding a new tool.
 - Slug/user input is validated against an allowlist regex before being used in a URL — blocks path traversal.
 - `response.encoding` must be forced to `"utf-8"` explicitly in `rsc.py` — the `text/x-component` response carries no charset header, so `requests` silently falls back to latin-1 and mangles non-ASCII outlet names (Cyrillic, Korean, …).
 - Payload/parse caps: 8 MB response body, 2000 chunks per parse — don't remove these when touching `rsc.py`.

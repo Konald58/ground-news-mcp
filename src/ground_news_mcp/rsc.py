@@ -64,7 +64,7 @@ MAX_PAYLOAD_BYTES = 8 * 1024 * 1024
 MAX_JSON_CHUNKS = 2000
 # Recursion ceiling for tree walks. RSC trees are typically <30 deep.
 MAX_WALK_DEPTH = 200
-# Field-length caps on strings flowing back to Claude (prompt-injection defense).
+# Field-length caps on strings flowing back to the model (prompt-injection defense).
 MAX_STRING_FIELD = 2048
 # Slug must look like a slug — no path traversal characters.
 _SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9_\-]{0,200}$")
