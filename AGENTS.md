@@ -62,5 +62,5 @@ CI (`.github/workflows/ci.yml`) runs all four on push/PR to `main`.
   ```bash
   curl -H "RSC: 1" "https://ground.news/article/<slug>" > tests/fixtures/article_sample.rsc
   ```
-- **This is a personal-use tool.** Ground News has no public API; keep usage patterns polite (rate limits above exist for this reason) and don't host this as a public multi-user service — ToS gray zone.
-- Test fixtures are English-only; they cannot by themselves catch encoding regressions in non-Latin text — verify encoding fixes against a live probe, not just the fixture suite.
+- **This is a personal-use tool.** Ground News has no public API; keep usage patterns polite (rate limits above exist for this reason) and don't host this as a public multi-user service.
+- The article fixture carries Cyrillic, Hebrew, Arabic and CJK outlet names and `TestNonLatinOutlets` guards them, but the fixture is read from disk as UTF-8 either way; a response-decoding regression only shows in `TestFetchEncoding` or a live probe.

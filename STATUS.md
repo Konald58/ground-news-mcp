@@ -19,17 +19,15 @@ Done this session, from the previous Next up list:
 - README: live demo with real output, two-count explanation, test count, install wording for a private repo, Blindspot line reworded.
 - Server docstring tool names corrected.
 
-Earlier context: RSC approach, Terms review and landscape check are in the 2026-10-09 entry of `docs/decisions.md` and the git log. Ground News Terms ban automated access and reverse engineering; no official API or MCP exists; this is the only MCP returning the bias breakdown.
+Earlier context: the RSC approach and the landscape check are in `docs/decisions.md` and the git log. Ground News has no official API or MCP; this is the only MCP returning the bias breakdown. It is a personal-use tool: rate-limited, cached, and not hosted as a service.
 
 ## Next up
 
-- Push `feat/rsc-rebuild` and tag `v0.3.0`, fast-forward `main`, delete the branch (Kon's go needed for the push to main).
-- Then merge `personal-website` branch `feat/portfolio-ground-news`.
-- Decide public vs private (see Open questions).
-- Housekeeping candidate, not yet done: delete `tests/fixtures/*.html` (three files from the BeautifulSoup era, about 1.2 MB, referenced by nothing).
+- Merge `personal-website` branch `feat/portfolio-ground-news`.
+- Make the repo public as a portfolio piece (decided 2026-10-09; prep done, visibility flip pending).
 - Optional: run API Anything once against the Ground News search page to find a real search request; `search_stories` still maps keywords to interest slugs.
 
 ## Open questions
 
 - Timeline for the eventual Next.js RSC chunk-format migration risk (~1–2 year estimated half-life) — no action needed yet, just a known future maintenance trigger.
-- Whether to make the repo public as a portfolio piece. The Terms forbid it on their face; realistic risk for a public, rate-limited, non-commercial repo is a takedown request, while hosting it for others is the real exposure (assessment 2026-10-09, not legal advice). Kon's call.
+- Whether to publish with full git history or as a fresh single commit (history still holds the removed internal note).

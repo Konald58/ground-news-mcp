@@ -54,7 +54,7 @@ Claude then answers with the split, names the two Right-leaning outlets, and fla
 
 ## Install
 
-There is no package on an index; install from a checkout. The repo is private, so you need access to it (or your own fork).
+There is no package on an index; install from a checkout.
 
 ```bash
 git clone https://github.com/Konald58/ground-news-mcp
@@ -119,7 +119,7 @@ curl -H "RSC: 1" -H "User-Agent: test" \
 - **Two source counts.** Ground News counts every outlet covering a story (`total_sources`, shown on topic cards as `source_count`) and, separately, only the outlets it has rated (`rated_sources`). The Left/Center/Right split is over rated sources; the rest appear in `sources` as `Unknown`. The two numbers differ on almost every story, so quote the one you mean.
 - **Blindspot Premium** data is gated behind a session cookie. Set `GN_SESSION_COOKIE` if you have one. Without it, `get_missing_perspectives` works from the public per-source ratings only.
 - **No keyword search.** Ground News doesn't expose one in the RSC payload, so `search_stories` maps queries to interest slugs.
-- **2 MB per article fetch.** Acceptable for interactive use; would be wasteful for bulk harvesting (which would also be a ToS problem — don't).
+- **2 MB per article fetch.** Acceptable for interactive use; would be wasteful for bulk harvesting, so don't.
 - **Stability.** RSC field names are stable across normal deploys. They won't survive a Next.js major-version migration without a parser update.
 
 ## License
