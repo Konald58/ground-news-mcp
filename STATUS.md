@@ -30,4 +30,3 @@ Earlier context: the RSC approach and the landscape check are in `docs/decisions
 ## Open questions
 
 - Timeline for the eventual Next.js RSC chunk-format migration risk (~1–2 year estimated half-life) — no action needed yet, just a known future maintenance trigger.
-- None open. Published with full history on 2026-10-09.
