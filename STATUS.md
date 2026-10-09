@@ -10,24 +10,24 @@ MCP server that exposes Ground News media-bias and coverage data as tools Claude
 
 ## Where it stands
 
-**2026-09-12** — Repo moved from `~/ground-news-mcp` to `~/code/ground-news-mcp` as part of a system-wide reorg; no file in the repo hardcodes the old path (checked `src/`, `tests/`, `README.md`, `CLAUDE.md`, `CHANGELOG.md`, `pyproject.toml`, `.github/workflows/ci.yml` — none reference `/Users/konstantindragovic/ground-news-mcp` or `~/ground-news-mcp`). The `.venv` was already regenerated at the new path.
+**2026-10-09** — v0.3.0 cut on `feat/rsc-rebuild` (tag `v0.3.0`, local only until pushed). The branch is 12 commits ahead of `main` and fast-forwards cleanly; `main` is still the scaffold. 55 tests pass offline, ruff and bandit clean. Live check the same day: `get_topic_stories('ai')` and `get_story_bias` both work and the UTF-8 fix holds (Korean outlet name intact).
 
-Currently checked out on `feat/rsc-rebuild`, which is 6 commits ahead of `main` (`main` sits at the original scaffold commit only — the entire RSC-based rebuild, portfolio polish, and this branch's later work have never been merged to `main`).
+Done this session, from the previous Next up list:
+- Source-count mismatch explained and fixed: `sourceCount` is every outlet, `biasSourceCount` only rated ones. `BiasBreakdown` now has `total_sources` (all), `rated_sources` and `unrated_count`; `StoryResult` has `rated_source_count`. Unrated outlets stay in `sources` as `Unknown`.
+- User-Agent version read from package metadata; `pyproject.toml` aligned (it still said 0.1.0 after the 0.2.0 changelog entry).
+- Non-Latin outlet regression test over the existing fixture (no new fixture needed).
+- README: live demo with real output, two-count explanation, test count, install wording for a private repo, Blindspot line reworded.
+- Server docstring tool names corrected.
 
-Today's commit on this branch, `chore: commit in-progress work before system migration` (3849222), bundled the pending UTF-8 fix from the 2026-07-16 handoff into `rsc.py` (forces `response.encoding = "utf-8"` since the charset-less `text/x-component` response was defaulting to latin-1 and mangling non-Latin outlet names), added a `TestFetchEncoding` regression test, updated `CHANGELOG.md`, and touched three HTML fixtures. This work has **landed on the branch but has not been re-verified** since — the 2026-07-16 handoff's live end-to-end probe predates this commit, and there's been no fresh live check against ground.news since.
-
-As of 2026-10-09: live check passed. `get_topic_stories('ai')` returned 3 current stories and `get_story_bias` returned a full breakdown (17 sources, 47/41/12 L/C/R), so the RSC approach still works. 51 tests pass, ruff clean. Landscape checked the same day: no Ground News API or official MCP, nothing on npm, PyPI or MCP registries; on GitHub only `vicatnight/groundnewsmcp` (generic page text, no bias data) and `jtk18/groundnews-crawler` (bias JSON, CLI, MCP "planned"). This is the only MCP returning the bias breakdown. Ground News Terms (about.ground.news/terms-and-conditions, updated 2024-11-26) ban automated access (6.1(d)), reverse engineering (3.1(c)), making functionality available to third parties (3.1(e)) and building a similar service (3.1(f)); Ontario law, Toronto arbitration (IP disputes go to court). API Anything (reel-73) was considered and rejected as a dependency; at most a one-off tool to discover a real search endpoint.
+Earlier context: RSC approach, Terms review and landscape check are in the 2026-10-09 entry of `docs/decisions.md` and the git log. Ground News Terms ban automated access and reverse engineering; no official API or MCP exists; this is the only MCP returning the bias breakdown.
 
 ## Next up
 
-- Decide public vs private (see Open questions); everything below is safe either way.
-- README: test count (26 -> 51), install steps that assume a public clone, and reword the `get_missing_perspectives` "free-tier proxy for Blindspot Premium" line.
-- Version consistency: User-Agent says 0.1, CHANGELOG has 0.2.0.
-- Investigate `source_count` mismatch: topic list said 22 sources, `get_story_bias` said 17 for the same story (likely rated sources only); fix or label.
-- Add a demo (sample Claude question + tool output, GIF or screenshot) to the README.
-- Add a non-Latin-source fixture to `tests/fixtures/`.
-- Merge `feat/rsc-rebuild` into `main` (`main` is still the scaffold), then merge `personal-website` branch `feat/portfolio-ground-news`.
-- Optional: run API Anything once against the Ground News search page to find a real search request; `search_stories` currently maps keywords to interest slugs.
+- Push `feat/rsc-rebuild` and tag `v0.3.0`, fast-forward `main`, delete the branch (Kon's go needed for the push to main).
+- Then merge `personal-website` branch `feat/portfolio-ground-news`.
+- Decide public vs private (see Open questions).
+- Housekeeping candidate, not yet done: delete `tests/fixtures/*.html` (three files from the BeautifulSoup era, about 1.2 MB, referenced by nothing).
+- Optional: run API Anything once against the Ground News search page to find a real search request; `search_stories` still maps keywords to interest slugs.
 
 ## Open questions
 
