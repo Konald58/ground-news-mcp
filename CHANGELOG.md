@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. Format foll
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-09
+
 ### Added
 - `BiasBreakdown.rated_sources` and `unrated_count`; `StoryResult.rated_source_count`. Ground News shows two numbers per story: every outlet covering it (`sourceCount`) and only the outlets with a bias rating (`biasSourceCount`). The topic list reported the first and `get_story_bias` the second, so the same story showed 25 sources in one tool and 18 in the other. Both are now exposed and labeled.
 - Regression test that non-Latin outlet names (Cyrillic, Hebrew, Arabic, CJK) in the article fixture parse intact.
