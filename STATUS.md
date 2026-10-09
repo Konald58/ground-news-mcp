@@ -10,7 +10,7 @@ MCP server that exposes Ground News media-bias and coverage data as tools for an
 
 ## Where it stands
 
-**2026-10-09** — v0.3.0 cut on `feat/rsc-rebuild` (tag `v0.3.0`, local only until pushed). The branch is 12 commits ahead of `main` and fast-forwards cleanly; `main` is still the scaffold. 55 tests pass offline, ruff and bandit clean. Live check the same day: `get_topic_stories('ai')` and `get_story_bias` both work and the UTF-8 fix holds (Korean outlet name intact).
+**2026-10-09** — Public since today (github.com/Konald58/ground-news-mcp), v0.3.0 tagged, `main` holds everything, CI green. 55 tests pass offline, ruff and bandit clean. Wording and install docs are client-neutral (Claude Code, Claude Desktop, Cursor, Windsurf, VS Code, Codex). `mcp` is pinned `<2` because 2.x renamed `FastMCP`; the 2.x migration is open. Live check the same day: `get_topic_stories('ai')` and `get_story_bias` both work and the UTF-8 fix holds (Korean outlet name intact).
 
 Done this session, from the previous Next up list:
 - Source-count mismatch explained and fixed: `sourceCount` is every outlet, `biasSourceCount` only rated ones. `BiasBreakdown` now has `total_sources` (all), `rated_sources` and `unrated_count`; `StoryResult` has `rated_source_count`. Unrated outlets stay in `sources` as `Unknown`.
@@ -24,10 +24,10 @@ Earlier context: the RSC approach and the landscape check are in `docs/decisions
 ## Next up
 
 - Merge `personal-website` branch `feat/portfolio-ground-news`.
-- Make the repo public as a portfolio piece (decided 2026-10-09; prep done, visibility flip pending).
+- Migrate to mcp 2.x (`FastMCP` became `MCPServer`, other API changes; see the SDK migration guide) and drop the `<2` pin.
 - Optional: run API Anything once against the Ground News search page to find a real search request; `search_stories` still maps keywords to interest slugs.
 
 ## Open questions
 
 - Timeline for the eventual Next.js RSC chunk-format migration risk (~1–2 year estimated half-life) — no action needed yet, just a known future maintenance trigger.
-- Whether to publish with full git history or as a fresh single commit (history still holds the removed internal note).
+- None open. Published with full history on 2026-10-09.
