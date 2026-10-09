@@ -13,6 +13,7 @@ import pytest
 import requests
 
 from ground_news_mcp.rsc import (
+    USER_AGENT,
     fetch_rsc,
     parse_article,
     parse_interest,
@@ -73,6 +74,14 @@ class TestSlugHelpers:
     def test_topic_slug_normalizes(self):
         assert topic_slug("Iran War") == "iran-war"
         assert topic_slug("  AI / Tech  ") == "ai-tech"
+
+
+@pytest.mark.unit
+class TestUserAgent:
+    def test_user_agent_carries_installed_version(self):
+        from importlib.metadata import version
+
+        assert f"ground-news-mcp/{version('ground-news-mcp')} " in USER_AGENT
 
 
 # ---------------------------------------------------------------------------

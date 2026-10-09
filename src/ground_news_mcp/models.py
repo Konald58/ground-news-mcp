@@ -14,11 +14,20 @@ class Source:
 
 @dataclass(frozen=True)
 class BiasBreakdown:
-    """Full bias breakdown for a single story."""
+    """Full bias breakdown for a single story.
+
+    `total_sources` counts every outlet covering the story (Ground News's
+    `sourceCount`). `rated_sources` counts only outlets with a bias rating
+    (`biasSourceCount`); the Left/Center/Right counts and percentages are
+    computed over those. `unrated_count` is the difference, and those
+    sources appear in `sources` with `bias_label == "Unknown"`.
+    """
 
     title: str
     story_url: str
     total_sources: int
+    rated_sources: int
+    unrated_count: int
     left_count: int
     center_count: int
     right_count: int
@@ -37,7 +46,8 @@ class StoryResult:
     title: str
     url: str
     slug: str
-    source_count: int | None = None
+    source_count: int | None = None  # every outlet (`sourceCount`)
+    rated_source_count: int | None = None  # outlets with a rating (`biasSourceCount`)
 
 
 @dataclass(frozen=True)

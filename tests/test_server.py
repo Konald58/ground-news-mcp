@@ -62,6 +62,8 @@ def test_get_story_bias_returns_dict():
     result = server.get_story_bias("any-slug")
     assert isinstance(result, dict)
     assert "total_sources" in result
+    assert "rated_sources" in result
+    assert "unrated_count" in result
     assert "dominant_bias" in result
     assert isinstance(result["sources"], list)
 

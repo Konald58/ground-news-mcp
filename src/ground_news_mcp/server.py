@@ -3,10 +3,11 @@
 Tools:
 - get_story_bias        — full bias breakdown for one story
 - get_topic_stories     — recent stories on an interest/topic
+- search_stories        — keyword query mapped to an interest slug
 - get_missing_perspectives — surface the underreported side of a story
 - check_content_bias    — heuristic bias check on user text
 - list_outlets_by_bias  — filter a story's sources by Left/Center/Right
-- get_settings / update_settings — adjust this server's behavior
+- get_server_settings / update_server_setting — adjust this server's behavior
 
 Run with `ground-news-mcp` (entry point) or `python -m ground_news_mcp.server`.
 """

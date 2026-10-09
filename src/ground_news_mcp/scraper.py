@@ -133,10 +133,22 @@ def get_story_bias(url_or_slug: str) -> BiasBreakdown:
         max_len=300,
     )
 
+    # Ground News shows two numbers: `sourceCount` is every outlet covering
+    # the story, `biasSourceCount` only the outlets with a bias rating. The
+    # L/C/R split is over rated sources; the rest surface as "Unknown".
+    total_sources = story.get("sourceCount") or len(sources)
+    rated_sources = (
+        story["biasSourceCount"]
+        if story.get("biasSourceCount") is not None
+        else left_count + center_count + right_count
+    )
+
     return BiasBreakdown(
         title=title,
         story_url=article_url(url_or_slug),
-        total_sources=story.get("biasSourceCount") or len(sources),
+        total_sources=total_sources,
+        rated_sources=rated_sources,
+        unrated_count=max(total_sources - rated_sources, 0),
         left_count=left_count,
         center_count=center_count,
         right_count=right_count,
@@ -170,6 +182,7 @@ def get_topic_stories(topic: str, limit: int = 10) -> list[StoryResult]:
                 url=f"https://ground.news/article/{_safe_str(slug, max_len=200)}",
                 slug=_safe_str(slug, max_len=200),
                 source_count=s.get("sourceCount") or s.get("biasSourceCount"),
+                rated_source_count=s.get("biasSourceCount"),
             )
         )
     return out
@@ -320,7 +333,7 @@ def check_content_bias(text: str, topic: str) -> BiasCheck:
         f"Detected {left_score} left-coded and {right_score} right-coded framing "
         f"signals. Ground News currently shows {bias.dominant_bias} coverage "
         f"({bias.left_pct}% L / {bias.center_pct}% C / {bias.right_pct}% R) "
-        f"across {bias.total_sources} sources on '{topic}'."
+        f"across {bias.rated_sources} rated sources on '{topic}'."
     )
     if suggest_side and suggested:
         explanation += f" Consider {suggest_side}-leaning sources for balance."

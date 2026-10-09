@@ -21,6 +21,7 @@ import os
 import re
 import threading
 import time
+from importlib.metadata import PackageNotFoundError, version
 from typing import Any
 from urllib.parse import urlparse
 
@@ -31,7 +32,21 @@ from .ratelimit import call_with_limits
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://ground.news"
-USER_AGENT = "ground-news-mcp/0.1 (+https://github.com/Konald58/ground-news-mcp)"
+
+
+def _package_version() -> str:
+    try:
+        return version("ground-news-mcp")
+    except PackageNotFoundError:  # running from a bare checkout
+        return "0.0.0"
+
+
+# Identifying User-Agent. The version comes from pyproject via package
+# metadata so it can never drift from the released number again.
+USER_AGENT = (
+    f"ground-news-mcp/{_package_version()} "
+    "(+https://github.com/Konald58/ground-news-mcp)"
+)
 REQUEST_TIMEOUT = 20
 
 # Process-wide TTL cache: {url: (timestamp, parsed_data)}.

@@ -40,6 +40,32 @@ class TestGetStoryBias:
             assert s.outlet
             assert s.bias_label in ("Left", "Center", "Right", "Unknown")
 
+    def test_total_counts_every_source_and_rated_counts_only_rated(self):
+        """`sourceCount` (all) vs `biasSourceCount` (rated) — the two numbers
+        Ground News shows differ, and so must ours, with explicit labels."""
+        result = scraper.get_story_bias("any-slug")
+        assert result.total_sources == 533
+        assert result.rated_sources == 322
+        assert result.unrated_count == 533 - 322
+        assert result.total_sources == len(result.sources)
+        assert (
+            result.left_count + result.center_count + result.right_count
+            == result.rated_sources
+        )
+        unknown = [s for s in result.sources if s.bias_label == "Unknown"]
+        assert len(unknown) == result.unrated_count
+
+
+@pytest.mark.unit
+class TestNonLatinOutlets:
+    def test_non_latin_outlet_names_survive_parsing(self):
+        """Fixture holds Cyrillic, Hebrew, Arabic and CJK outlet names; none
+        may come back as mojibake or get dropped."""
+        outlets = {s.outlet for s in scraper.get_story_bias("any-slug").sources}
+        for name in ("5 канал", "Європейська правда", "וואלה!", "大纪元 Epoch Times"):
+            assert name in outlets
+        assert not any("Ã" in o or "Ð" in o for o in outlets)
+
 
 @pytest.mark.unit
 class TestGetTopicStories:
@@ -49,6 +75,13 @@ class TestGetTopicStories:
         for s in results:
             assert s.slug
             assert s.url.startswith("https://ground.news/article/")
+
+    def test_cards_carry_both_counts(self):
+        results = scraper.get_topic_stories("ukraine", limit=5)
+        for s in results:
+            assert s.source_count is not None
+            assert s.rated_source_count is not None
+            assert s.rated_source_count <= s.source_count
 
     def test_search_aliases_topic(self):
         a = scraper.search_stories("ukraine", limit=3)
