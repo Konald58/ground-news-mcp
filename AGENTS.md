@@ -6,7 +6,7 @@ Parses the Next.js React Server Components (RSC) payload instead of scraping ren
 ## Stack
 
 - Python 3.12+
-- `mcp` (FastMCP), `requests`, `python-dotenv`
+- `mcp` (MCPServer), `requests`, `python-dotenv`
 - `ruff` (lint + format), `pytest` + `pytest-cov` (`src/` layout, tests in `tests/`)
 
 ## Setup
@@ -40,7 +40,7 @@ CI (`.github/workflows/ci.yml`) runs all four on push/PR to `main`.
 - `src/ground_news_mcp/rsc.py` — fetches the RSC payload (`RSC: 1` header → `text/x-component`), parses concatenated chunks via `json.JSONDecoder().raw_decode()`, walks the JSON tree by structural predicates (e.g. `"biasSourceCount" in d and "slug" in d` identifies the story object).
 - `src/ground_news_mcp/ratelimit.py` — token bucket (2s min interval, lock held across sleep), exponential backoff on 429/503 honoring `Retry-After`, circuit breaker (3 failures → 5min cooldown).
 - `src/ground_news_mcp/scraper.py` — public API wrapping `rsc.py`; returns frozen dataclasses from `models.py`.
-- `src/ground_news_mcp/server.py` — FastMCP server, 8 tools; `_to_dict` flattens frozen dataclasses/tuples to JSON.
+- `src/ground_news_mcp/server.py` — MCPServer server, 8 tools; `_to_dict` flattens frozen dataclasses/tuples to JSON.
 - `src/ground_news_mcp/settings.py` — JSON persistence at `~/.ground-news-mcp/settings.json`; three profiles (`minimal`/`balanced`/`full`).
 - `src/ground_news_mcp/models.py` — frozen dataclasses for all return types.
 - `tests/fixtures/*.rsc` — captured RSC payloads; all tests run offline against these.

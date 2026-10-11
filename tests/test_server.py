@@ -1,8 +1,8 @@
-"""Integration test for the FastMCP server wiring.
+"""Integration test for the MCPServer wiring.
 
 Verifies that:
 - All declared tools register with the MCP server
-- Each tool can be called through the FastMCP machinery and returns the
+- Each tool can be called through the MCPServer machinery and returns the
   expected shape (when scraper internals are monkeypatched to fixtures)
 """
 

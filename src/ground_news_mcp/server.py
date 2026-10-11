@@ -18,13 +18,13 @@ import logging
 from dataclasses import asdict, is_dataclass
 from typing import Any
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 
 from . import scraper, settings
 
 logger = logging.getLogger(__name__)
 
-mcp = FastMCP("ground-news-mcp")
+mcp = MCPServer("ground-news-mcp")
 
 
 def _to_dict(obj: Any) -> Any:
