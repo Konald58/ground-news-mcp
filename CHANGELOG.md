@@ -5,10 +5,11 @@ All notable changes to this project will be documented in this file. Format foll
 ## [Unreleased]
 
 ### Changed
+- Migrated to the mcp 2.x SDK: `FastMCP` (`mcp.server.fastmcp`) is now `MCPServer` (`mcp.server.mcpserver`), and the dependency is `mcp>=2.3,<3` (the `<2` pin is dropped). The 8 tools keep their names, signatures and behavior.
 - Wording and install docs are client-neutral: the server is plain stdio MCP and the README now shows Claude Code, Claude Desktop, Cursor, Windsurf, VS Code and Codex configs.
 
 ### Fixed
-- Pin `mcp<2`. mcp 2.x renamed `FastMCP` to `MCPServer`, so a fresh install broke at import; CI on `main` was red. Migration to 2.x is a separate change.
+- Pin `mcp<2`. mcp 2.x renamed `FastMCP` to `MCPServer`, so a fresh install broke at import; CI on `main` was red. Superseded by the 2.x migration above.
 
 ## [0.3.0] - 2026-10-09
 

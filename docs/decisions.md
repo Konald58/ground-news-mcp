@@ -9,3 +9,4 @@
 - **2026-10-09** — No new non-Latin fixture; the existing article fixture already carries Cyrillic, Hebrew, Arabic and CJK outlet names, so a test over it covers the case without a second 2 MB file.
 - **2026-10-09** — Published with full git history rather than a fresh single-commit repo. Rationale: the commit log is the evidence that the work was iterative and reviewed; the old internal note it still contains holds nothing secret.
 - **2026-10-09** — Pin `mcp<2` instead of migrating now. Rationale: 2.x renamed `FastMCP` and broke a fresh install on the day the repo went public; a pin restores green CI in one line, the migration is its own change.
+- **2026-10-11** — Migrated to mcp 2.x (`MCPServer`, `mcp>=2.3,<3`), superseding the `<2` pin. Rationale: the only break was the `FastMCP` import and class name; `@mcp.tool()` and `run()` are unchanged in the SDK migration guide, so the 8 tools needed no edits.

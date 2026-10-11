@@ -12,7 +12,9 @@ MCP server that exposes Ground News media-bias and coverage data as tools for an
 
 **2026-10-09** — Public since today (github.com/Konald58/ground-news-mcp), v0.3.0 tagged, `main` holds everything, CI green. 55 tests pass offline, ruff and bandit clean. Wording and install docs are client-neutral (Claude Code, Claude Desktop, Cursor, Windsurf, VS Code, Codex). `mcp` is pinned `<2` because 2.x renamed `FastMCP`; the 2.x migration is open. Live check the same day: `get_topic_stories('ai')` and `get_story_bias` both work and the UTF-8 fix holds (Korean outlet name intact).
 
-Done this session, from the previous Next up list:
+**2026-10-11** — Migrated to mcp 2.3.0 on branch `fix/mcp-2` (`FastMCP` -> `MCPServer`, pin now `mcp>=2.3,<3`); 55 tests, ruff and bandit clean, stdio list_tools and a tool call verified. Awaiting merge. The portfolio card is already on the website's `main`.
+
+Done this session (2026-10-09), from the previous Next up list:
 - Source-count mismatch explained and fixed: `sourceCount` is every outlet, `biasSourceCount` only rated ones. `BiasBreakdown` now has `total_sources` (all), `rated_sources` and `unrated_count`; `StoryResult` has `rated_source_count`. Unrated outlets stay in `sources` as `Unknown`.
 - User-Agent version read from package metadata; `pyproject.toml` aligned (it still said 0.1.0 after the 0.2.0 changelog entry).
 - Non-Latin outlet regression test over the existing fixture (no new fixture needed).
@@ -23,8 +25,7 @@ Earlier context: the RSC approach and the landscape check are in `docs/decisions
 
 ## Next up
 
-- Merge `personal-website` branch `feat/portfolio-ground-news`.
-- Migrate to mcp 2.x (`FastMCP` became `MCPServer`, other API changes; see the SDK migration guide) and drop the `<2` pin.
+- Merge branch `fix/mcp-2` (mcp 2.x migration, done 2026-10-11, awaiting merge; see note under Where it stands).
 - Optional: run API Anything once against the Ground News search page to find a real search request; `search_stories` still maps keywords to interest slugs.
 
 ## Open questions
